@@ -14,6 +14,10 @@ public class Request {
 
     public Request(){}
 
+    public Request(LocalDate date){
+        this.date = date;
+    }
+
     // getters
     public Long getId(){
         return id;
