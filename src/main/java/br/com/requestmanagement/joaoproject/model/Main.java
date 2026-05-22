@@ -4,7 +4,7 @@ import br.com.requestmanagement.joaoproject.repository.CategoryRepository;
 import br.com.requestmanagement.joaoproject.repository.ProductRepository;
 import br.com.requestmanagement.joaoproject.repository.RequestRepository;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
@@ -14,6 +14,7 @@ public class Main {
     private ProductRepository productRepository;
     private CategoryRepository categoryRepository;
     private RequestRepository requestRepository;
+    private List<Category> categoryList = new ArrayList<>();
 
     public Main(ProductRepository productRepository, CategoryRepository categoryRepository, RequestRepository requestRepository){
         this.productRepository = productRepository;
@@ -57,7 +58,7 @@ public class Main {
     }
 
     private void addProduct(){
-        System.out.println("Write the product's name and its price: ");
+        System.out.println("\nWrite the product's name and its price: ");
         System.out.print("Name: ");
         String productName = read.nextLine();
         System.out.print("Price: ");
@@ -72,19 +73,20 @@ public class Main {
 
         Category category = new Category(categoryName);
 
-        LocalDate date = LocalDate.now();
-        Request request = new Request(date);
+        List<Product> productList = new ArrayList<>();
+        productList.add(product);
 
-        productRepository.save(product);
+        category.setProductList(productList);
+
         categoryRepository.save(category);
-        requestRepository.save(request);
+        System.out.println("Data saved!");
     }
 
     private void listProducts(){
-        List<Product> productList = productRepository.findAll();
+        categoryList = categoryRepository.findAll();
 
-        productList.stream()
-                .sorted(Comparator.comparing(Product::getName))
+        categoryList.stream()
+                .sorted(Comparator.comparing(Category::getName))
                 .forEach(System.out::println);
     }
 }
