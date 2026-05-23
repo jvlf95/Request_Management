@@ -2,6 +2,9 @@ package br.com.requestmanagement.joaoproject.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "products")
 public class Product {
@@ -14,7 +17,17 @@ public class Product {
     private Double price;
 
     @ManyToOne
+    @JoinColumn(name = "category_id")
     private Category category;
+
+    @Transient
+    @ManyToMany(mappedBy = "productList")
+    private List<Product> productList = new ArrayList<>();
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
+
 
     public Product(){}
 
@@ -24,6 +37,7 @@ public class Product {
     }
 
     // getters and setters
+
     public Long getId(){
         return id;
     }
@@ -42,6 +56,7 @@ public class Product {
     public void setPrice(Double price){
         this.price = price;
     }
+
     public Category getCategory(){
         return category;
     }
@@ -49,10 +64,27 @@ public class Product {
         this.category = category;
     }
 
+    public List<Product> getProductList() {
+        return productList;
+    }
+
+    public void setProductList(List<Product> productList) {
+        this.productList = productList;
+    }
+
+    public Supplier getSupplier(){
+        return supplier;
+    }
+
+    public void addSupplier(Supplier supplier){
+        this.supplier = supplier;
+    }
+
     @Override
     public String toString(){
-        return "\nProduct Name: " + name +
-                "\nPrice: R$" + price;
+        return  "\nProduct Name: " + name +
+                "\nPrice: R$" + price +
+                "\nSuplier: " + supplier.getName();
     }
 
 }

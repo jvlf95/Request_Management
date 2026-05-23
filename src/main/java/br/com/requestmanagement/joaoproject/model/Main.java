@@ -4,10 +4,8 @@ import br.com.requestmanagement.joaoproject.repository.CategoryRepository;
 import br.com.requestmanagement.joaoproject.repository.ProductRepository;
 import br.com.requestmanagement.joaoproject.repository.RequestRepository;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.time.LocalDate;
+import java.util.*;
 
 public class Main {
     private Scanner read = new Scanner(System.in);
@@ -31,6 +29,7 @@ public class Main {
                 Choose one of the options down bellow:
                 1 - Add a new product
                 2 - Check all products
+                3 - Make a request
                 
                 0 - Exit
                 """);
@@ -44,6 +43,9 @@ public class Main {
                     break;
                 case 2:
                     listProducts();
+                    break;
+                case 3:
+                    makeRequest();
                     break;
                 case 0:
                     System.out.println("Exiting...");
@@ -67,11 +69,19 @@ public class Main {
 
         Product product = new Product(productName, productPrice);
 
+        System.out.println("Write the product's supplier");
+        System.out.print("Name: ");
+        String suplierName = read.nextLine();
+
+        Supplier supplier = new Supplier(suplierName);
+
         System.out.println("Now, write the product's category: ");
         System.out.print("Category: ");
         String categoryName = read.nextLine();
 
         Category category = new Category(categoryName);
+
+        product.addSupplier(supplier);
 
         List<Product> productList = new ArrayList<>();
         productList.add(product);
@@ -89,4 +99,30 @@ public class Main {
                 .sorted(Comparator.comparing(Category::getName))
                 .forEach(System.out::println);
     }
+
+    private void makeRequest(){
+        listProducts();
+
+        System.out.println("Choose one of the products above");
+        System.out.print("Product: ");
+        String productName = read.nextLine();
+
+        Optional<Product> productFound = categoryList.stream()
+                .flatMap(c -> c.getProductList().stream()
+                        .filter(p -> p.getName().toLowerCase().contains(productName.toLowerCase())))
+                .findFirst();
+
+        if(productFound.isPresent()){
+            var product = productFound.get();
+            Request request = new Request(LocalDate.now());
+
+            request.addProduct(product);
+
+            requestRepository.save(request);
+        }else{
+            System.out.println("ERROR");
+        }
+
+    }
+
 }
